@@ -1,13 +1,13 @@
 class TuringMachine
 
   def initialize(q, gamma, b, sigma, delta, q0, f)
-    @q = q
-    @gamma = gamma
-    @b = b
-    @sigma = sigma
-    @q0 = q0
-    @f = f
-    self.class.send(:define_method, :delta, delta)
+    @q = q  #set of non-empty states
+    @gamma = gamma  #set of alphabet characters
+    @b = b  #blank symbol/character
+    @sigma = sigma  #set of input characters
+    self.class.send(:define_method, :delta, delta) #transition function
+    @q0 = q0  #initial state
+    @f = f  #set of final/accepting states
   end
 
   def accepts?(tape)
