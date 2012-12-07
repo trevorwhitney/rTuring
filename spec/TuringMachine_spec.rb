@@ -14,7 +14,7 @@ describe 'TuringMachine' do
     f = ["q1"]
 
     delta = ->(input_tape) do
-      init_tape(input_tape)
+      common_tape_init(input_tape)
 
       while input_tape[@current_input] != @b
         if @q[@current_state] == "q0"
@@ -26,7 +26,7 @@ describe 'TuringMachine' do
         end
       end
 
-      finalize_tape(input_tape)
+      common_tape_finalize(input_tape)
 
       return @q[@current_state]
     end
@@ -50,7 +50,7 @@ describe 'TuringMachine' do
     f = ["q4"]
 
     delta = ->(input_tape) do   
-      init_tape(input_tape)
+      common_tape_init(input_tape)
 
       while input_tape[@current_input] != @b
         if @q[@current_state] == "q0"
@@ -84,7 +84,7 @@ describe 'TuringMachine' do
         end
       end
 
-      finalize_tape(input_tape)
+      common_tape_finalize(input_tape)
       return @q[@current_state]
     end
 
@@ -109,17 +109,17 @@ describe 'TuringMachine' do
     sigma = %w(w)
 
     delta = ->(input_tape) do
-      init_tape(input_tape)
+      common_tape_init(input_tape)
 
-      while input_tape[@current_input] != :blank
-        if q[@current_state] == "q0"
+      while input_tape[@current_input] != @b
+        if @q[@current_state] == "q0"
           if input_tape[@current_input] == "w"
             input_tape[@current_input] = "w"
             @current_input += 1
             @current_state += 2
           else raise InvalidTransitionError.new
           end
-        elsif q[@current_state] == "q2"
+        elsif @q[@current_state] == "q2"
           if input_tape[@current_input] == "w"
             input_tape[@current_input] = "w"
             @current_input += 1
@@ -130,8 +130,8 @@ describe 'TuringMachine' do
         end
       end
 
-      finalize_tape(input_tape)
-      return q[@current_state]
+      common_tape_finalize(input_tape)
+      return @q[@current_state]
     end
 
     q0 = "q0"
@@ -151,8 +151,49 @@ describe 'TuringMachine' do
 
   it "can represent a machine that accepts the language " +
       "L = {w : |w| is a multiple of 3}" do
-      
+    q = %w(q0 q1 q2 q3 q4)
+    gamma = ["w", :blank]
+    b = :blank
+    sigma = %w(w)
+    
+    delta = ->(input_tape) do
+      common_tape_init(input_tape)
 
-    pending "not done yet"
+      while input_tape[@current_input] != @b
+        if %q(q0 q1 q2).include? q[@current_state]
+          if input_tape[@current_input] == "w"
+            input_tape[@current_input] = "w"
+            @current_input += 1
+            @current_state += 1
+          else raise InvalidTransitionError.new
+          end
+        elsif q[@current_state] == "q3"
+          if input_tape[@current_input] == "w"
+            input_tape[@current_input] = "w"
+            @current_input += 1
+            @current_state = @q.index("q1")
+          else raise InvalidTransitionError.new
+          end
+        end
+      end
+
+      common_tape_finalize(input_tape)
+      return @q[@current_state]
+    end
+
+    q0 = "q0"
+    f = %w(q4)
+
+    valid_input1 = [:blank, "w", "w", "w", :blank]
+    valid_input2 = [:blank, "w", "w", "w", "w", "w", "w", "w", "w", "w",
+      :blank]
+    invalid_input1 = [:blank, "w", "w", :blank]
+    invalid_input2 = [:blank, "w", "w", "w", "w", "w", :blank]
+
+    turing_machine = TuringMachine.new(q, gamma, b, sigma, delta, q0, f)
+    turing_machine.accepts?(valid_input1).should be_true
+    turing_machine.accepts?(valid_input2).should be_true
+    turing_machine.accepts?(invalid_input1).should be_false
+    turing_machine.accepts?(invalid_input2).should be_false
   end
 end

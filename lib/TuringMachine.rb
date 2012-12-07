@@ -19,7 +19,7 @@ class TuringMachine
     end
   end
 
-  def init_tape(input_tape)
+  def common_tape_init(input_tape)
     @current_input = 0
     @current_state = @q.index(@q0)
 
@@ -28,7 +28,7 @@ class TuringMachine
     end
   end
 
-  def finalize_tape(input_tape)
+  def common_tape_finalize(input_tape)
     input_tape[@current_input] = @b
     @current_input -= 1
     @current_state += 1
