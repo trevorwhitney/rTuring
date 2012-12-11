@@ -196,4 +196,5 @@ describe 'TuringMachine' do
     turing_machine.accepts?(invalid_input1).should be_false
     turing_machine.accepts?(invalid_input2).should be_false
   end
+
 end
